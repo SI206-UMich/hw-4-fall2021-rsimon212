@@ -98,8 +98,7 @@ class Stall:
     def stock_up(self, food_name, quantity):
         if food_name not in self.inventory:
             self.inventory[food_name] = 0
-        
-        self.inventory += quantity
+        self.inventory[food_name] += quantity
 
     def compute_cost(self, quantity):
         return quantity * self.cost
@@ -182,26 +181,26 @@ class TestAllMethods(unittest.TestCase):
     def test_compute_cost(self):
         #what's wrong with the following statements?
         #can you correct them?
-        self.assertEqual(self.s1.compute_cost(self.s1,5), 51)
-        self.assertEqual(self.s3.compute_cost(self.s3,6), 45)
+        self.assertEqual(self.s1.compute_cost(5), 50)
+        self.assertEqual(self.s3.compute_cost(6), 42)
 
 	# Check that the stall can properly see when it is empty
     def test_has_item(self):
         # Set up to run test cases
-
+  
         # Test to see if has_item returns True when a stall has enough items left
         # Please follow the instructions below to create three different kinds of test cases 
         # Test case 1: the stall does not have this food item: 
-        
+        self.assertEqual(self.s3.has_item('Chicken', 10), False)
         # Test case 2: the stall does not have enough food item: 
-        
+        self.assertEqual(self.s1.has_item("Burger", 50), False)
         # Test case 3: the stall has the food item of the certain quantity: 
-        pass
+        self.assertEqual(self.s2.has_item("Taco",30))
 
 	# Test validate order
     def test_validate_order(self):
 		# case 1: test if a customer doesn't have enough money in their wallet to order
-
+        self.assertEqual(self.f1.validate_order(self.c1,)
 		# case 2: test if the stall doesn't have enough food left in stock
 
 		# case 3: check if the cashier can order item from that stall
@@ -209,36 +208,53 @@ class TestAllMethods(unittest.TestCase):
 
     # Test if a customer can add money to their wallet
     def test_reload_money(self):
-        pass
+        self.f1.wallet = 40
+        self.f1.reload_money(60)
+        self.assertEqual(self.f1.wallet, 100)
     
 ### Write main function
 def main():
     #Create different objects 
-    i1 = {"cheese": 50, "chips": 35, "chicken":42}
-    i2 = {"pretzels": 64, "fish": 25, "steak": 68}
+    i1 = {"steak": 20, "chicken": 15, "fish":11}
+    i2 = {"pretzels": 30, "chips": 25, "popcorn": 10}
 
     c1 = Customer("Ryan", 350)
     c2 = Customer("Jenna", 200)
+    c3 = Customer("Brad", 280)
 
-    s1 = Stall("cheese", i1, 4)
-    s2 = Stall("pretzels", i2, 5)
+    s1 = Stall("Dinner", i1, 4)
+    s2 = Stall("Snacks", i2, 5)
 
-    cash1 = Cashier("Chris", s1)
-    cash2 = Cashier("Brenda", s2)
+    cash1 = Cashier("Chris", [s1])
+    cash2 = Cashier("Brenda", [s2])
 
-    c1.validate_order(s1, i1, "chicken", 3)
-    c2.validate_order(s2, i2, "steak", 4)
     #Try all cases in the validate_order function
+    
     #Below you need to have *each customer instance* try the four cases
     #case 1: the cashier does not have the stall 
+    c1.validate_order(cash1, s2, "steak", 3)
+    c2.validate_order(cash2, s1, "pretzels", 4)
+    c3.validate_order(cash1,s2, "chicken",11)
     
     #case 2: the casher has the stall, but not enough ordered food or the ordered food item
-    
+    c1.validate_order(cash1,s1, "chicken", 20)
+    c2.validate_order(cash2,s2,"popcorn",15)
+    c3.validate_order(cash1,s1,"steak", 30)
     #case 3: the customer does not have enough money to pay for the order: 
-    
+    c1.wallet = 10
+    c1.validate_order(cash1,s1,"fish", 6)
+
+    c2.wallet = 5
+    s2.stock_up("chips", 10)
+    c2.validate_order(cash2, s2,"chips", 3)
+
+    c3.wallet = 8
+    s1.stock_up("steak", 5)
+    c3.validate_order(cash1,s1,"steak",2)
+
+
     #case 4: the customer successfully places an order
 
-    pass
 
 if __name__ == "__main__":
 	main()
