@@ -1,4 +1,7 @@
-
+# Your name: Ryan Simon
+# Your student id: 59317557
+# Your email: rysimon@umich.edu
+# List who you worked with on this homework: 
 import unittest
 
 # The Customer class
@@ -28,7 +31,9 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        pass
+        cashier.receive_payment(stall, amount)
+        self.wallet -= amount
+        stall += amount
 
     # The __str__ method prints the customer's information.    
     def __str__(self):
@@ -72,7 +77,37 @@ class Cashier:
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
     
-    pass
+    def __init__(self, name, inventory, cost = 7, earnings = 0):
+        self.name = name
+        self.inventory = inventory
+        self.cost = cost
+        self.earnings = earnings
+
+    def process_order(self, food_name, quantity):
+        if food_name in self.inventory:
+            self.inventory[food_name] -= quantity
+        else:
+            print("There is not enough food in the inventory.")
+    
+    def has_item(self, food_name, quantity):
+        if quantity <= self.inventory[food_name]:
+            return True
+        else:
+            return False
+    
+    def stock_up(self, food_name, quantity):
+        if food_name not in self.inventory:
+            self.inventory[food_name] = 0
+        
+        self.inventory += quantity
+
+    def compute_cost(self, quantity):
+        return quantity * self.cost
+    
+    def __str__(self):
+        return "Hello, we are " + self.name + ". This is the current menu " + self.inventory.keys() + ". We charge $" + str(self.cost) + " per item. We have $" + str(self.earnings) + " in total."
+
+
 
 
 class TestAllMethods(unittest.TestCase):
@@ -179,7 +214,20 @@ class TestAllMethods(unittest.TestCase):
 ### Write main function
 def main():
     #Create different objects 
+    i1 = {"cheese": 50, "chips": 35, "chicken":42}
+    i2 = {"pretzels": 64, "fish": 25, "steak": 68}
 
+    c1 = Customer("Ryan", 350)
+    c2 = Customer("Jenna", 200)
+
+    s1 = Stall("cheese", i1, 4)
+    s2 = Stall("pretzels", i2, 5)
+
+    cash1 = Cashier("Chris", s1)
+    cash2 = Cashier("Brenda", s2)
+
+    c1.validate_order(s1, i1, "chicken", 3)
+    c2.validate_order(s2, i2, "steak", 4)
     #Try all cases in the validate_order function
     #Below you need to have *each customer instance* try the four cases
     #case 1: the cashier does not have the stall 
